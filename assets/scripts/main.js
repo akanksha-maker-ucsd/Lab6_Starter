@@ -24,6 +24,13 @@ function getRecipesFromStorage() {
   // A9. TODO - Complete the functionality as described in this function
   //           header. It is possible in only a single line, but should
   //           be no more than a few lines.
+  let recArray = []
+  const recipes = localStorage.getItem('recipes');
+  if(!recipes){
+    return recArray;
+  }
+   recArray = JSON.parse(recipes);
+   return recArray;
 }
 
 /**
@@ -35,10 +42,16 @@ function getRecipesFromStorage() {
  */
 function addRecipesToDocument(recipes) {
   // A10. TODO - Get a reference to the <main> element
+  let main = document.querySelector("main");
   // A11. TODO - Loop through each of the recipes in the passed in array,
   //            create a <recipe-card> element for each one, and populate
   //            each <recipe-card> with that recipe data using element.data = ...
   //            Append each element to <main>
+  for (let i in recipes){
+    let card = document.createElement('recipe-card');
+    card.data = recipes[i];
+    main.appendChild(card);
+  }
 }
 
 /**
@@ -51,19 +64,53 @@ function saveRecipesToStorage(recipes) {
   // B1. TODO - Complete the functionality as described in this function
   //            header. It is possible in only a single line, but should
   //            be no more than a few lines.
+  
+  localStorage.setItem('recipes', JSON.stringify(recipes));
 }
 
 /**
- * Adds the necesarry event handlers to <form> and the clear storage
+ * Adds the necessary event handlers to <form> and the clear storage
  * <button>.
  */
 function initFormHandler() {
 
   // B2. TODO - Get a reference to the <form> element
-  
+  let form = document.querySelector("form");
+  let submit = document.querySelector("button");
+  let main = document.querySelector("main");
+ 
   // B3. TODO - Add an event listener for the 'submit' event, which fires when the
   //            submit button is clicked
+  submit.addEventListener("click", function() {
+    const formData = new FormData(form);
+    let recipeObject = {};
+    for (const [key, value] of formData) {
+      recipeObject[key] = value;
+    }
 
+   //console.log(JSON.stringify(recipeObject));
+    let card = document.createElement('recipe-card');
+    card.data = recipeObject;
+    main.appendChild(card);
+    
+    let recipeStorage = getRecipesFromStorage();
+
+    recipeStorage.push(recipeObject);
+    saveRecipesToStorage(recipeStorage);
+      
+ 
+  });
+
+  let clearButton = document.querySelector("button.danger")
+  clearButton.addEventListener("click", function() {
+      localStorage.clear();
+      main.innerHTML = "";
+
+  });
+
+      
+
+  
   // Steps B4-B9 will occur inside the event listener from step B3
   // B4. TODO - Create a new FormData object from the <form> element reference above
   // B5. TODO - Create an empty object (I'll refer to this object as recipeObject to
@@ -83,3 +130,43 @@ function initFormHandler() {
   // B13. TODO - Delete the contents of <main>
 
 }
+
+
+/*
+localStorage.setItem('recipes', JSON.stringify([
+  {
+    "imgSrc": "./assets/images/1_spooky-ghost-cookies.jpeg",
+    "imgAlt": "Spooky Ghost Cookies",
+    "titleLnk": "https://www.delish.com/holiday-recipes/halloween/a28637917/ghost-cookies-recipe/",
+    "titleTxt": "Spooky Ghost Cookies",
+    "organization": "Delish.com",
+    "rating": 5,
+    "numRatings": 1,
+    "lengthTime": "2 hr",
+    "ingredients": "Light corn syrup, almond, black food coloring, powdered sugar,"
+  },
+  {
+    "imgSrc": "./assets/images/2_frightfully-easy-ghost-cookies.jpeg",
+    "imgAlt": "Ghost cookies in pumpkin bowl",
+    "titleLnk": "https://www.pillsbury.com/recipes/frightfully-easy-ghost-cookies/bed2af7e-59a0-4b68-be25-1dcaeca66254",
+    "titleTxt": "Frightfully Easy Ghost Cookies",
+    "organization": "Pillsbury",
+    "rating": 4,
+    "numRatings": 90,
+    "lengthTime": "30 min",
+    "ingredients": "Peanut butter filled, chocolate chips, candy coating"
+  },
+  {
+    "imgSrc": "./assets/images/3_ingredient-ghost-halloween-cookies.jpeg",
+    "imgAlt": "Ghost cookies in metal tin",
+    "titleLnk": "https://butterwithasideofbread.com/easy-ghost-halloween-cookies/",
+    "titleTxt": "3 Ingredient Easy Ghost Halloween Cookies",
+    "organization": "Butter with a Side of Bread",
+    "rating": 0,
+    "numRatings": 0,
+    "lengthTime": "10 min",
+    "ingredients": "White almond bark, mini chocolate chips"
+  }
+]
+));
+*/
